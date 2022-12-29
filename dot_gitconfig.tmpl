@@ -38,3 +38,7 @@
   side-by-side	= true
 [delta "unified"]
   side-by-side	= false
+{{ if eq .chezmoi.os "darwin" }}
+[credential]
+	helper = osxkeychain
+{{ end }}
