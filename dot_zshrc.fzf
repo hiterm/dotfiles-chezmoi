@@ -1,0 +1,230 @@
+# Auto-completion
+# ---------------
+if [[ $- == *i* ]]; then
+    if [[ -f "/usr/local/opt/fzf/shell/completion.zsh" ]]; then
+        source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
+    elif [[ -f "/usr/share/fzf/completion.zsh" ]]; then
+        source "/usr/share/fzf/completion.zsh" 2> /dev/null
+    fi
+fi
+
+# Use fd
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
+export FZF_DEFAULT_COMMAND='fd --type f'
+
+# default option
+# colorscheme
+export FZF_DEFAULT_OPTS='
+  --color fg:#D8DEE9,bg:#2E3440,hl:#A3BE8C,fg+:#D8DEE9,bg+:#434C5E,hl+:#A3BE8C
+  --color pointer:#BF616A,info:#4C566A,spinner:#4C566A,header:#4C566A,prompt:#81A1C1,marker:#EBCB8B
+'
+
+# vim
+function fvim() {
+    local file
+    file=$(find . -type f -not -path "*/.git/*" | fzf +m --prompt="vim> " --preview="bat --color always {}")
+
+    if [ -n "$file" ]; then
+        print -z vim $file
+    fi
+}
+
+# repeat history
+function fzf-history() {
+    # $(())とすると数式扱いになってしまうため、スペースを入れて$( ())とする
+    command=$( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) |
+        fzf --prompt="History> " +s --tac |
+        sed 's/ *[0-9]* *//')
+    print -z $command
+}
+
+# CTRL-R - Paste the selected command from history into the command line
+function fzf-history-widget() {
+    local tac=${commands[tac]:-"tail -r"}
+    BUFFER=$( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) |
+        sed 's/ *[0-9]*\** *//' |
+        eval $tac | awk '!a[$0]++' |
+        fzf --prompt="History> " +s)
+    CURSOR=$#BUFFER
+}
+zle     -N   fzf-history-widget
+bindkey '^R' fzf-history-widget
+
+# snippets
+function fsnip() {
+  print -z $(cat ~/.zsh_snips | fzf)
+}
+
+# fbr - checkout git branch
+function fbr() {
+    local branches branch
+    branches=$(git branch | grep -v "^* " | sed "s/^  //") &&
+        branch=$(echo "$branches" | fzf +m --prompt="Branch> " --preview="git log --color=always {}") &&
+        git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
+
+# fbr - checkout git branch (including remote branches), sorted by most recent commit, limit 30 last branches
+function fbr-remote() {
+  local branches branch
+  branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
+  branch=$(echo "$branches" |
+           fzf -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
+  git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+
+# fco - checkout git branch/tag
+function fco() {
+    local tags branches target
+    tags=$(
+    git tag | awk '{print "\x1b[31;1mtag\x1b[m\t" $1}') || return
+    branches=$(
+    git branch --all | grep -v HEAD             |
+    sed "s/.* //"    | sed "s#remotes/[^/]*/##" |
+    sort -u          | awk '{print "\x1b[34;1mbranch\x1b[m\t" $1}') || return
+    target=$(
+    (echo "$branches"; echo "$tags") |
+    fzf --prompt="Checkout> " --no-hscroll --ansi +m -d "\t" -n 2) || return
+    git checkout $(echo "$target" | awk '{print $2}')
+}
+
+# fcoc - checkout git commit
+function fcoc() {
+  local commits commit
+  commits=$(git log --pretty=oneline --abbrev-commit --reverse) &&
+  commit=$(echo "$commits" | fzf --tac +s +m -e) &&
+  git checkout $(echo "$commit" | sed "s/ .*//")
+}
+
+# fcs - get git commit sha
+# example usage: git rebase -i `fcs`
+function fcs() {
+    local commits commit
+    commits=$(git log --color=always --pretty=oneline --abbrev-commit --reverse) &&
+        commit=$(echo "$commits" | fzf --tac +s +m -e --ansi --reverse) &&
+        echo -n $(echo "$commit" | sed "s/ .*//")
+}
+
+# fstash - easier way to deal with stashes
+# type fstash to get a list of your stashes
+# enter shows you the contents of the stash
+# ctrl-d shows a diff of the stash against your current HEAD
+# ctrl-b checks the stash out as a branch, for easier merging
+function fstash() {
+    local out q k sha
+    while out=$(
+        git stash list --pretty="%C(yellow)%h %>(14)%Cgreen%cr %C(blue)%gs" |
+        fzf --ansi --no-sort --query="$q" --print-query \
+            --expect=ctrl-d,ctrl-b);
+    do
+        mapfile -t out <<< "$out"
+        q="${out[0]}"
+        k="${out[1]}"
+        sha="${out[-1]}"
+        sha="${sha%% *}"
+        [[ -z "$sha" ]] && continue
+        if [[ "$k" == 'ctrl-d' ]]; then
+            git diff $sha
+        elif [[ "$k" == 'ctrl-b' ]]; then
+            git stash branch "stash-$sha" $sha
+            break;
+        else
+            git stash show -p $sha
+        fi
+    done
+}
+
+# change directory
+function fzd() {
+    local dir
+    dir=$( (find -L ${1:-.} -type d -print 2> /dev/null) |
+        fzf --prompt="cd > " +m)
+
+    if [ -n "$dir" ]; then
+        cd $dir
+    fi
+}
+
+
+# cd history
+function hd () {
+    local selected_dir=$(cdr -l |
+        sed 's/^[^ ][^ ]*  *//' |
+        sed 's/\\ / /g' |
+        sed 's/\\(/(/g' |
+        sed 's/\\)/)/g' |
+        fzf +s --prompt="cd> ")
+    selected_dir=${selected_dir/#\~/$HOME}
+    if [ -n "$selected_dir" ]; then
+        cd "$selected_dir"
+    fi
+}
+
+# cd to parent directory
+function cdp() {
+  dir=$( (
+    var=$(pwd)
+    while [ -n "$var" ]; do
+      var=$(echo "$var" | rg -o "/.+/" | sed "s/.$//")
+      echo "$var"
+    done
+  ) | fzf --prompt="cd > " +m)
+
+    if [ -n "$dir" ]; then
+        cd $dir
+    fi
+}
+
+# ghq
+function fhq {
+    local dir="$(ghq list -p | fzf --prompt="ghq> ")"
+    if [ -n "$dir" ] ; then
+        cd "$dir"
+    fi
+}
+
+# bookmark
+function bd()
+{
+    local dir="$(cat ~/.bookmarks |
+        fzf --prompt="cd> " |
+        awk '{print $2}')"
+    if [ -n "$dir" ] ; then
+        cd "$dir"
+    fi
+}
+
+function fshow() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
+
+# fshow-preview - git commit browser with previews
+alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | diff-so-fancy'"
+function fshow-preview() {
+  glNoGraph |
+    fzf --no-sort --reverse --tiebreak=index --no-multi \
+    --ansi --preview="$_viewGitLogLine" \
+    --header "enter to view, alt-y to copy hash" \
+    --bind "enter:execute:$_viewGitLogLine   | less -R" \
+    --bind "alt-y:execute:$_gitLogLineToHash | xclip"
+  }
+
+function fssh() {
+  local host="$(cat ~/.ssh/known_hosts | awk '{split($1, s, ","); print s[1]}' | fzf)"
+  if [ -n "$host" ] ; then
+    print -z ssh "$host"
+  fi
+}
