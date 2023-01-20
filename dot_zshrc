@@ -271,6 +271,10 @@ else
   echo "Please install bat."
 fi
 
+if type zoxide > /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
 # fpath
 fpath=($fpath $HOME/.zsh/completion(N-/))
 
