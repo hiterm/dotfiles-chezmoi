@@ -271,10 +271,6 @@ else
   echo "Please install bat."
 fi
 
-if type zoxide > /dev/null; then
-  eval "$(zoxide init zsh)"
-fi
-
 # fpath
 fpath=($fpath $HOME/.zsh/completion(N-/))
 
@@ -309,6 +305,11 @@ zinit light "knu/zsh-git-escape-magic"
 path=($HOME/.rbenv/bin(N-/) $path)
 zinit ice wait"0" lucid has"rbenv"
 zinit light htlsne/zinit-rbenv
+
+# zinitとコマンドがかぶるので、それより後に記載する
+if type zoxide > /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
 
 # OS毎の設定ファイルを読み込む
 [ -f $HOME/.zshrc.`uname` ] && source $HOME/.zshrc.`uname`
