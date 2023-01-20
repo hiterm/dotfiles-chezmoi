@@ -8,10 +8,13 @@
   ca = commit -a
   di = diff
   dic = diff --cached
+  dis = -c delta.side-by-side=true diff
+  dins = -c delta.side-by-side=false diff
   co = checkout
   cm = commit
   sw = switch
   rs = restore
+  pushf = push --force-with-lease --force-if-includes
   ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
   uni = !git -c 'delta.features="base unified"'
 [url "git@github.com:"]
@@ -42,3 +45,5 @@
 [credential]
 	helper = osxkeychain
 {{ end }}
+[include]
+  path = .gitconfig.local
