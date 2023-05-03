@@ -309,6 +309,8 @@ zinit light htlsne/zinit-rbenv
 # zinitとコマンドがかぶるので、それより後に記載する
 if type zoxide > /dev/null; then
   eval "$(zoxide init zsh)"
+else
+  echo "Please install zoxide."
 fi
 
 # OS毎の設定ファイルを読み込む
@@ -321,4 +323,6 @@ fi
 # fzfコマンドが存在し、設定ファイルも存在するとき読み込む
 if type fzf > /dev/null && [ -f $HOME/.zshrc.fzf ]; then
     source $HOME/.zshrc.fzf
+else
+  echo "Please install fzf."
 fi
