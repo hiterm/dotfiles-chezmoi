@@ -27,6 +27,10 @@ github = 'romkatv/zsh-defer'
 github = 'knu/zsh-git-escape-magic'
 use = ['git-escape-magic']
 
+[plugins.powerlevel10k]
+github = 'romkatv/powerlevel10k'
+use = ['powerlevel10k.zsh-theme']
+
 # For example:
 #
 # [plugins.base16]
