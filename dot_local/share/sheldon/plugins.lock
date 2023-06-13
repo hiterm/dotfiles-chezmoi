@@ -1,0 +1,43 @@
+version = "0.7.3"
+home = "/home/hiterm"
+config_dir = "/home/hiterm/.config/sheldon"
+data_dir = "/home/hiterm/.local/share/sheldon"
+config_file = "/home/hiterm/.config/sheldon/plugins.toml"
+
+[[plugins]]
+name = "zsh-completions"
+source_dir = "/home/hiterm/.local/share/sheldon/repos/github.com/zsh-users/zsh-completions"
+files = ["/home/hiterm/.local/share/sheldon/repos/github.com/zsh-users/zsh-completions/zsh-completions.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "fast-syntax-highlighting"
+source_dir = "/home/hiterm/.local/share/sheldon/repos/github.com/zdharma-continuum/fast-syntax-highlighting"
+files = ["/home/hiterm/.local/share/sheldon/repos/github.com/zdharma-continuum/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-defer"
+source_dir = "/home/hiterm/.local/share/sheldon/repos/github.com/romkatv/zsh-defer"
+files = ["/home/hiterm/.local/share/sheldon/repos/github.com/romkatv/zsh-defer/zsh-defer.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-git-escape-magic"
+source_dir = "/home/hiterm/.local/share/sheldon/repos/github.com/knu/zsh-git-escape-magic"
+files = ["/home/hiterm/.local/share/sheldon/repos/github.com/knu/zsh-git-escape-magic/git-escape-magic"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[templates]
+PATH = "export PATH=\"{{ dir }}:$PATH\""
+path = "path=( \"{{ dir }}\" $path )"
+fpath = "fpath=( \"{{ dir }}\" $fpath )"
+source = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"

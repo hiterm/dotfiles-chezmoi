@@ -274,39 +274,10 @@ fi
 # fpath
 fpath=($fpath $HOME/.zsh/completion(N-/))
 
-### Added by Zinit's installer
-if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
-        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
-        print -P "%F{160}▓▒░ The clone has failed.%f%b"
-fi
+# sheldon
+eval "$(sheldon source)"
 
-source "$HOME/.zinit/bin/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-### End of Zinit's installer chunk
-
-zinit ice wait"0" blockf lucid
-zinit light zsh-users/zsh-completions
-
-zinit ice wait"0" \
-  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-  atload"fast-theme -q q-jmnemonic" \
-  atload"noglob unset FAST_HIGHLIGHT[chroma-ruby]" \
-  lucid
-zinit light zdharma-continuum/fast-syntax-highlighting
-
-zinit ice wait"0" pick"git-escape-magic" lucid
-zinit light "knu/zsh-git-escape-magic"
-
-# rbenv
-path=($HOME/.rbenv/bin(N-/) $path)
-zinit ice wait"0" lucid has"rbenv"
-zinit light htlsne/zinit-rbenv
-
-# zinitとコマンドがかぶるので、それより後に記載する
+# zoxide
 if type zoxide > /dev/null; then
   eval "$(zoxide init zsh)"
 else
@@ -326,3 +297,6 @@ if type fzf > /dev/null && [ -f $HOME/.zshrc.fzf ]; then
 else
   echo "Please install fzf."
 fi
+
+autoload -Uz compinit
+zsh-defer compinit
