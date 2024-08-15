@@ -107,7 +107,7 @@ local font_list = {
 	{
 		name = "HackGen",
 		setting = {
-			font = wezterm.font("HackGenNerd Console"),
+			font = wezterm.font("HackGen Console NF"),
 		},
 	},
 	{

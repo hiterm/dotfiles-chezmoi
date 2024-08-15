@@ -5,10 +5,16 @@ path=(
     $HOME/bin.Darwin(N-/)
     /usr/local/bin(N-/)
     /usr/local/sbin(N-/)
+    /opt/homebrew/bin(N-/)
+    /opt/homebrew/sbin(N-/)
     /Applications/Ghostscript.app(N-/)
     /Applications/LilyPond.app/Contents/Resources/bin(N-/)
     /Library/TeX/texbin(N-/)
     ${path}
+)
+fpath=(
+    ${fpath}
+    /opt/homebrew/share/zsh/site-functions(N-/)
 )
 
 # aliases

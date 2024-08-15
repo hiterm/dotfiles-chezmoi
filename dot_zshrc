@@ -5,6 +5,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# OS毎の設定ファイルを読み込む
+[ -f $HOME/.zshrc.`uname` ] && source $HOME/.zshrc.`uname`
+
 # zpmod
 # uncomment to use zpmod
 #
@@ -281,9 +284,6 @@ if type zoxide > /dev/null; then
 else
   echo "Please install zoxide."
 fi
-
-# OS毎の設定ファイルを読み込む
-[ -f $HOME/.zshrc.`uname` ] && source $HOME/.zshrc.`uname`
 
 # git管理しない設定ファイルを読み込む
 [ -f $HOME/.zshrc.local ] && source $HOME/.zshrc.local
