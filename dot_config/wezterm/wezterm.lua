@@ -14,7 +14,7 @@ local function append_array(array, other)
 	end
 end
 
-local mac = wezterm.target_triple == "x86_64-apple-darwin"
+local mac = wezterm.target_triple == "x86_64-apple-darwin" or "aarch64-apple-darwin"
 local linux = wezterm.target_triple == "x86_64-unknown-linux-gnu"
 
 -- key bindings
