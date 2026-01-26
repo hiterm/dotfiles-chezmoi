@@ -1,0 +1,9 @@
+[tools]
+node = "latest"
+"npm:opencode-ai" = "latest"
+pnpm = "latest"
+
+[settings]
+
+[settings.npm]
+package_manager = "pnpm"
