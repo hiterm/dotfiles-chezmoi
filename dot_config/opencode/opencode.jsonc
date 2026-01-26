@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "ask",
+    "bash": {
+      "ls *": "allow",
+      "true": "allow",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "git --no-pager diff *": "allow",
+      "git log *": "allow",
+      "git --no-pager log *": "allow",
+      "git rev-parse *": "allow",
+      "echo *": "allow",
+      "rg *": "allow",
+      "grep *": "allow",
+    },
+    "read": "allow",
+    "edit": "allow",
+    "grep": "allow",
+    "glob": "allow",
+    "list": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "webfetch": "allow",
+  }
+}
