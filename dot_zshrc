@@ -296,6 +296,12 @@ else
   echo "Please install fzf."
 fi
 
+if type mise > /dev/null; then
+  eval "$(mise activate zsh)"
+else
+  echo "Please install mise."
+fi
+
 autoload -Uz compinit
 zsh-defer compinit
 
