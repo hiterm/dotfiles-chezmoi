@@ -180,11 +180,14 @@ function cdp() {
 }
 
 # ghq
-function fhq {
-    local dir="$(ghq list -p | fzf --prompt="ghq> ")"
-    if [ -n "$dir" ] ; then
-        cd "$dir"
-    fi
+function fhq() {
+  local root sel
+  root=$(ghq root)
+  root=${root%/}
+  sel=$(ghq list | fzf --prompt="ghq> ")
+  if [[ -n "$sel" ]]; then
+    cd "${root}/${sel}"
+  fi
 }
 
 # bookmark
