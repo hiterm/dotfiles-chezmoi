@@ -3,6 +3,7 @@ node = "lts"
 "npm:difit" = "latest"
 "npm:dotenv-cli" = "latest"
 "npm:opencode-ai" = "latest"
+"npm:takt" = "latest"
 pnpm = "latest"
 
 [settings]
