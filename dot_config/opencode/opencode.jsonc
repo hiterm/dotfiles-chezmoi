@@ -13,6 +13,7 @@
             "git --no-pager diff *": "allow",
             "git rev-parse *": "allow",
             "git show *": "allow",
+            "git logs *": "allow",
             "gh run view *": "allow",
             "gh run list *": "allow",
         },
