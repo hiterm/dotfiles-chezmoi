@@ -275,9 +275,6 @@ fi
 # fpath
 fpath=($fpath $HOME/.zsh/completion(N-/))
 
-# sheldon
-eval "$(sheldon source)"
-
 # zoxide
 if type zoxide > /dev/null; then
   eval "$(zoxide init zsh)"
@@ -301,6 +298,9 @@ if type mise > /dev/null; then
 else
   echo "Please install mise."
 fi
+
+# sheldon
+eval "$(sheldon source)"
 
 autoload -Uz compinit
 zsh-defer compinit

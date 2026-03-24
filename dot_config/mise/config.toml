@@ -1,4 +1,7 @@
 [tools]
+cargo-binstall = "latest"
+"cargo:sheldon" = "latest"
+ghq = "latest"
 node = "lts"
 "npm:difit" = "latest"
 "npm:dotenv-cli" = "latest"
