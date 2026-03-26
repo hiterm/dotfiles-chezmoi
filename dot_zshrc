@@ -265,6 +265,11 @@ function mkdircd() {
   mkdir $1 && cd $_
 }
 
+# clip alias for WSL
+if grep -qi microsoft /proc/version; then
+    alias clip='iconv -t utf-16 | clip.exe'
+fi
+
 # colorized man pages
 if type bat > /dev/null; then
   export MANPAGER="sh -c 'col -bx | bat -l man -p'"
